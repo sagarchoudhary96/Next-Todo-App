@@ -1,0 +1,14 @@
+[
+    {
+        "title": "Task",
+        "key": "title"
+    },
+    {
+        "title": "Priority",
+        "key": "priority"
+    },
+    {
+        "title": "Status",
+        "key": "status"
+    }
+]
