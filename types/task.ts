@@ -12,8 +12,8 @@ export enum TASK_PRIORITY {
 }
 
 export type Task = {
-  id: string;
+  id: number;
   title: string;
-  priority: TASK_PRIORITY;
+  priority?: TASK_PRIORITY;
   status: TASK_STATUS;
 };
