@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import PaginationPageButtons from "./PaginationPageButtons";
+import Tooltip from "../Tooltip";
 
 type TablePaginationProps = {
   totalPages: number;
@@ -59,28 +60,32 @@ const TablePagination = ({
         }
       />
       <div className="flex items-center gap-2">
-        <Button
-          onClick={() =>
-            onUpdatePagination((prev) => ({
-              ...prev,
-              currentPage: 1,
-            }))
-          }
-          disabled={pagination.currentPage === 1}
-        >
-          <ChevronsLeftIcon />
-        </Button>
-        <Button
-          onClick={() =>
-            onUpdatePagination((prev) => ({
-              ...prev,
-              currentPage: Math.max(prev.currentPage - 1, 1),
-            }))
-          }
-          disabled={pagination.currentPage === 1}
-        >
-          <ChevronLeftIcon />
-        </Button>
+        <Tooltip label="Go to first page">
+          <Button
+            onClick={() =>
+              onUpdatePagination((prev) => ({
+                ...prev,
+                currentPage: 1,
+              }))
+            }
+            disabled={pagination.currentPage === 1}
+          >
+            <ChevronsLeftIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip label="Go to prev page">
+          <Button
+            onClick={() =>
+              onUpdatePagination((prev) => ({
+                ...prev,
+                currentPage: Math.max(prev.currentPage - 1, 1),
+              }))
+            }
+            disabled={pagination.currentPage === 1}
+          >
+            <ChevronLeftIcon />
+          </Button>
+        </Tooltip>
         <PaginationPageButtons
           className="hidden sm:flex"
           totalPages={totalPages}
@@ -89,28 +94,32 @@ const TablePagination = ({
             onUpdatePagination((prev) => ({ ...prev, currentPage: page }))
           }
         />
-        <Button
-          onClick={() =>
-            onUpdatePagination((prev) => ({
-              ...prev,
-              currentPage: Math.min(prev.currentPage + 1, totalPages),
-            }))
-          }
-          disabled={pagination.currentPage === totalPages}
-        >
-          <ChevronRightIcon />
-        </Button>
-        <Button
-          onClick={() =>
-            onUpdatePagination((prev) => ({
-              ...prev,
-              currentPage: totalPages,
-            }))
-          }
-          disabled={pagination.currentPage === totalPages}
-        >
-          <ChevronsRightIcon />
-        </Button>
+        <Tooltip label="Go to next page">
+          <Button
+            onClick={() =>
+              onUpdatePagination((prev) => ({
+                ...prev,
+                currentPage: Math.min(prev.currentPage + 1, totalPages),
+              }))
+            }
+            disabled={pagination.currentPage === totalPages}
+          >
+            <ChevronRightIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip label="Go to last page">
+          <Button
+            onClick={() =>
+              onUpdatePagination((prev) => ({
+                ...prev,
+                currentPage: totalPages,
+              }))
+            }
+            disabled={pagination.currentPage === totalPages}
+          >
+            <ChevronsRightIcon />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );

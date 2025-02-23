@@ -24,7 +24,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import TablePagination from "./pagination";
+import TablePagination from "./Pagination";
 
 type TableViewProps = {
   columns: TableColumn[];
