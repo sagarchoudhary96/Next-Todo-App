@@ -98,6 +98,7 @@ export default function Home() {
     });
   };
 
+  // Show loader if schema is not loaded to prevent hydration mismatch
   if (!isLoaded) {
     return (
       <div className="h-full w-full items-center justify-center flex">

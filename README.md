@@ -1,24 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next Todo App
 
-## Getting Started
+A web-based task management application similar to Notion, Asana, and Liner allowing users to manage tasks (create, read, update, and delete (CRUD) tasks) as well as filter, sort, and paginate through them. It also allows to create custom Fields for the tasks making the task structure synamic and generating UI accordingly.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- yarn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Libraries Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Next.JS](https://nextjs.org/)
+- [Shadcn](https://ui.shadcn.com/)
+- [Tailwindcss V4](https://tailwindcss.com/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How to run:
+
+1. [Download](https://github.com/sagarchoudhary96/Next-Todo-App/archive/refs/heads/main.zip) or [Clone](https://github.com/sagarchoudhary96/Next-Todo-App.git) the Repository.
+2. Run `yarn install` to install the project dependencies.
+
+3. Run `yarn dev` to run the app in development mode.
+
+4. App can be seen at: [http://localhost:3000](http://localhost:3000).
+
+
+## Functionalities
+* The Project provides task management UI that allows users to add, update, and remove tasks.
+
+* The interface allows for filtering, sorting, and searching tasks using controls provided in table headers.
+
+* It uses `localStorage` to store the data within the browser and the initial data is loaded from `data` folder for both todo list and base field columns.
+
+* Basic Pagination is implemented.
+
+* A custom Field Editor is implemented to dynamically add new fields to the tasks letting then create new field of `Text, Number or Select` type and also letting user filter/sort using custom fields too.
+
 
 ## Learn More
 
@@ -26,11 +40,3 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

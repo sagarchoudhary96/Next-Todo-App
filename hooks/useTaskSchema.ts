@@ -3,18 +3,19 @@ import intialTaskColumns from "@/data/taskColumns.json";
 import useLocalStorage from "./useLocalStorage";
 import { useEffect, useState } from "react";
 const useTaskSchema = () => {
+  // We use local storage to store custom columns
   const [customColumns, setCustomColumns] = useLocalStorage<TableColumn[]>(
     "customColumns",
     []
   );
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // We set isLoaded to true after the first render to prevent hydration mismatch
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
   const addNewColumn = (newColumn: TableColumn) => {
-    // add column before the action column
     setCustomColumns((prev) => [...prev, newColumn]);
   };
 

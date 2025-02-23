@@ -18,6 +18,24 @@ import TextInputField from "../FormFields/TextInputField";
 import { Button } from "../ui/button";
 import { Form, FormField } from "../ui/form";
 
+const TABLE_COLUMN_TYPE_OPTIONS = Object.values(TableColumnType).map(
+  (type) => ({
+    label: type.charAt(0).toUpperCase() + type.slice(1),
+    value: type,
+  })
+);
+
+const DEFAULT_CUSTOM_FIELD_FORM_VALUE = {
+  title: "",
+  type: TableColumnType.TEXT,
+  options: [],
+  isCustom: true,
+};
+
+export type CustomFieldFormSubmitFn = (
+  taskValues: TableColumn | Omit<TableColumn, "key">
+) => Promise<void>;
+
 const customFieldSchema = z.object({
   title: z.string().nonempty("Field Title is required"),
   type: z.nativeEnum(TableColumnType),
@@ -33,26 +51,25 @@ const customFieldSchema = z.object({
   isCustom: z.boolean().optional(),
 });
 
-export type CustomFieldFormSubmitFn = (
-  taskValues: TableColumn | Omit<TableColumn, "key">
-) => Promise<void>;
+/**
+ * Custom Field Form Schema
+ * @type CustomFieldFormType
+ * @property title - Field Title
+ * @property type - Field Type
+ * @property options - Field Options - Optional
+ * @property required - Is Field Required
+ * @property isCustom - Is Field Custom -set by default to true
+ * @returns CustomFieldFormType
+ */
+export type CustomFieldFormType = z.infer<typeof customFieldSchema>;
 
-type CustomFieldFormType = z.infer<typeof customFieldSchema>;
-
-const TABLE_COLUMN_TYPE_OPTIONS = Object.values(TableColumnType).map(
-  (type) => ({
-    label: type.charAt(0).toUpperCase() + type.slice(1),
-    value: type,
-  })
-);
-
-const DEFAULT_CUSTOM_FIELD_FORM_VALUE = {
-  title: "",
-  type: TableColumnType.TEXT,
-  options: [],
-  isCustom: true,
-};
-
+/**
+ * Custom Field Form
+ * @param onSubmit - Function to handle form submission
+ * @param fieldToEdit - present when editing a field
+ * @param onClose - Function called when form is closed
+ * @returns JSX.Element
+ */
 const CustomFieldForm = ({
   onSubmit,
   fieldToEdit,
@@ -140,7 +157,7 @@ const CustomFieldForm = ({
             <FormField
               control={form.control}
               name="title"
-              disabled={!!fieldToEdit?.key}
+              disabled={!!fieldToEdit?.key} // Disable title field when editing
               render={({ field }) => (
                 <TextInputField<CustomFieldFormType>
                   field={field}

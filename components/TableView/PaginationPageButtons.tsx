@@ -2,6 +2,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MoreHorizontalIcon } from "lucide-react";
 
+/**
+  * Get Page Numbers for Pagination
+ * @param totalPages 
+ * @param currentPage 
+ * @returns Array<number | string>
+ */
 const getPageNumbers = (totalPages: number, currentPage: number) => {
   if (totalPages <= 5) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);

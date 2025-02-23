@@ -14,6 +14,14 @@ type FilterProps = {
   onChange: (key: string, value: string) => void;
   column: TableColumn;
 };
+
+/**
+ * Filter Component: Used by Table to render filter fields for columns
+ * @param value - Filter Value
+ * @param onChange - Filter Change Handler
+ * @param column - Table Column
+ * @returns JSX.Element
+ */
 const Filter = ({ column, value, onChange }: FilterProps) => {
   return (
     <div className="flex items-center gap-2">

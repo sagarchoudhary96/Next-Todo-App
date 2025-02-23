@@ -18,6 +18,7 @@ type ConfirmDialogProps = {
   onCancel: () => void;
   onConfirm: () => void;
 };
+
 const ConfirmationDialog = ({
   title,
   description,
