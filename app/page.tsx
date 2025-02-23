@@ -1,4 +1,6 @@
 "use client";
+import ConfirmationDialog from "@/components/ConfirmationDialog";
+import TaskForm, { TaskFormSubmitFn } from "@/components/TaskForm";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -8,14 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TaskForm, { TaskFormSubmitFn } from "@/components/TaskForm";
-import tableColumns from "@/data/columns.json";
 import initialTodos from "@/data/todo.json";
-import { STATUS_LABEL_MAP } from "@/lib/constants";
-import { Task, TASK_STATUS } from "@/types/task";
-import { ArrowUpDownIcon, Trash2Icon } from "lucide-react";
+import useTaskSchema from "@/hooks/useTaskSchema";
+import { TableColumn, TableColumnType, Task } from "@/lib/types";
+import { getValueLabelFromSelectColumn } from "@/lib/utils";
+import { ArrowUpDownIcon, PenIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import ConfirmationDialog from "@/components/ConfirmationDialog";
 import { toast } from "sonner";
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -25,6 +25,8 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
   const [taskToEdit, setTaskToEdit] = useState<Task>();
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const { taskColumns } = useTaskSchema();
 
   const totalPages = Math.ceil(todoList.length / DEFAULT_PAGE_SIZE);
   const paginatedTodos = todoList.slice(
@@ -43,9 +45,9 @@ export default function Home() {
     } else {
       setTodoList((prev) => [
         {
-          id: todoList.length + 1,
           ...taskValues,
-        },
+          id: todoList.length + 1,
+        } as Task,
         ...prev,
       ]);
     }
@@ -67,10 +69,43 @@ export default function Home() {
     );
   };
 
+  const handleSort = (key: string) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    const columnToSort = taskColumns.find((column) => column.key === key);
+    if (!columnToSort) return;
+    setSortConfig({ key, direction });
+    setTodoList((prev) =>
+      prev.sort((a, b) => {
+        const aVal = a[key] || "";
+        const bVal = b[key] || "";
+
+        // for select column types sort by options
+        if (columnToSort.type === TableColumnType.SELECT) {
+          const columnOptionValues = (columnToSort.options || []).map(
+            (option) => option.value
+          );
+          return direction === "asc"
+            ? columnOptionValues.indexOf(aVal as string) -
+                columnOptionValues.indexOf(bVal as string)
+            : columnOptionValues.indexOf(bVal as string) -
+                columnOptionValues.indexOf(aVal as string);
+        } else {
+          return direction === "asc"
+            ? String(aVal).localeCompare(String(bVal))
+            : String(bVal).localeCompare(String(aVal));
+        }
+      })
+    );
+  };
+
   return (
     <>
       <div className="flex items-center w-full justify-end mb-4">
         <TaskForm
+          columns={taskColumns}
           task={taskToEdit}
           onSubmit={onTaskSubmit}
           onClose={() => {
@@ -85,44 +120,65 @@ export default function Home() {
           <Table className="border table-fixed">
             <TableHeader>
               <TableRow>
-                {tableColumns.map(({ title, key }) => (
+                {taskColumns.map(({ title, key }) => (
                   <TableHead className="border" key={key} scope="col">
-                    {key === "actions" ? (
-                      <span className="font-bold text-primary">{title}</span>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        className="flex items-center gap-2 font-bold text-primary"
-                      >
-                        {title} <ArrowUpDownIcon className="w-4 h-4" />
-                      </Button>
-                    )}
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 font-bold text-primary"
+                      onClick={() => handleSort(key)}
+                      aria-sort={
+                        sortConfig.key === key
+                          ? sortConfig.direction === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
+                    >
+                      {title} <ArrowUpDownIcon className="w-4 h-4" />
+                    </Button>
                   </TableHead>
                 ))}
+                <TableHead className="border" scope="col">
+                  <span className="font-bold text-primary">Actions</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedTodos.map((todo) => (
+              {/* render todo by mapping from columns */}
+              {paginatedTodos.map((task) => (
                 <TableRow
-                  key={todo.id}
+                  key={task.id}
                   className="cursor-pointer"
-                  onClick={() => setTaskToEdit(todo)}
+                  onClick={() => setTaskToEdit(task)}
                 >
-                  <TableCell className="font-medium">{todo.title}</TableCell>
-                  <TableCell>{todo.priority}</TableCell>
-                  <TableCell>
-                    {STATUS_LABEL_MAP[todo.status as TASK_STATUS]}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="destructive"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setTaskToDelete(todo.id);
-                      }}
+                  {taskColumns.map((column) => (
+                    <TableCell
+                      className="border"
+                      key={`${task.id}-${column.key}`}
                     >
-                      <Trash2Icon className="w-4 h-4" />
-                    </Button>
+                      {column.type === TableColumnType.SELECT
+                        ? getValueLabelFromSelectColumn(
+                            column as TableColumn,
+                            task[column.key as keyof Task]
+                          )
+                        : task[column.key as keyof Task]}
+                    </TableCell>
+                  ))}
+                  <TableCell className="border">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => setTaskToEdit(task)}
+                      >
+                        <PenIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => setTaskToDelete(task.id)}
+                      >
+                        <Trash2Icon className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

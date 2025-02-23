@@ -1,0 +1,103 @@
+import { TableColumnType } from "@/lib/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon } from "lucide-react";
+import { useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { TaskFormProps } from ".";
+import TextInputField from "../FormFields/TextInputField";
+import { Button } from "../ui/button";
+import { Form, FormField } from "../ui/form";
+import SelectInputField from "../FormFields/SelectInputField";
+
+type TaskEditFormProps = TaskFormProps & {
+  isSaving?: boolean;
+};
+
+const TaskEditForm = ({
+  task,
+  onSubmit,
+  isSaving,
+  onClose,
+  columns,
+}: TaskEditFormProps) => {
+  const taskSchema = useMemo(() => {
+    const schemaFields: z.ZodRawShape = {};
+    columns.forEach((column) => {
+      if (column.type === TableColumnType.TEXT) {
+        if (column.required) {
+          schemaFields[column.key] = z
+            .string()
+            .nonempty(`"${column.title}" is required`);
+        } else {
+          schemaFields[column.key] = z.string();
+        }
+      } else if (column.type === TableColumnType.SELECT && column.options) {
+        schemaFields[column.key] = z.enum(
+          column.options.map((option) => option.value) as [string, ...string[]]
+        );
+        if (!column.required) {
+          schemaFields[column.key] = schemaFields[column.key].optional();
+        }
+      }
+    });
+    return z.object(schemaFields);
+  }, [columns]);
+
+  type TaskFormType = z.infer<typeof taskSchema>;
+
+  const form = useForm<TaskFormType>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: task,
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-2"
+      >
+        {columns.map((column) =>
+          column.type === TableColumnType.SELECT ? (
+            <FormField
+              key={column.key}
+              control={form.control}
+              name={column.key}
+              render={({ field }) => (
+                <SelectInputField<TaskFormType>
+                  field={field}
+                  label={column.title}
+                  options={column.options || []}
+                />
+              )}
+            />
+          ) : (
+            <FormField
+              key={column.key}
+              control={form.control}
+              name={column.key}
+              render={({ field }) => (
+                <TextInputField<TaskFormType>
+                  field={field}
+                  label={column.title}
+                  placeholder={`Enter ${column.title}`}
+                />
+              )}
+            />
+          )
+        )}
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" className="w-fit" disabled={isSaving}>
+            {isSaving && <Loader2Icon className="animate-spin" />}
+            Submit
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export default TaskEditForm;

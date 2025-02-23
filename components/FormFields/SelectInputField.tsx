@@ -7,11 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-type SelectOption = {
-  value: string;
-  label: string;
-};
+import { SelectOption } from "@/lib/types";
 type SelectInputFieldProps<T extends FieldValues> = {
   field: ControllerRenderProps<T>;
   label: string;

@@ -16,22 +16,24 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { Task } from "@/types/task";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import TaskEditor from "./editor";
+import TaskEditForm from "./form";
+import { TableColumn, Task } from "@/lib/types";
 
 export type TaskFormSubmitFn = (
   taskValues: Task | Omit<Task, "id">
 ) => Promise<void>;
+
 export type TaskFormProps = {
   task?: Task;
   onSubmit: TaskFormSubmitFn;
   onClose: () => void;
+  columns: TableColumn[];
 };
 
-const TaskForm = ({ task, onSubmit, onClose }: TaskFormProps) => {
+const TaskForm = ({ task, onSubmit, onClose, columns }: TaskFormProps) => {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const isEditMode = !!task?.id;
@@ -89,11 +91,12 @@ const TaskForm = ({ task, onSubmit, onClose }: TaskFormProps) => {
                 : "Fill in the details of your new task below"}
             </DialogDescription>
           </DialogHeader>
-          <TaskEditor
+          <TaskEditForm
             task={task}
             onSubmit={handleSubmit}
             isSaving={isSaving}
             onClose={() => handleOpenChange(false)}
+            columns={columns}
           />
         </DialogContent>
       </Dialog>
@@ -117,11 +120,12 @@ const TaskForm = ({ task, onSubmit, onClose }: TaskFormProps) => {
           </DrawerDescription>
         </DrawerHeader>
         <div className="p-4">
-          <TaskEditor
+          <TaskEditForm
             task={task}
             onSubmit={handleSubmit}
             isSaving={isSaving}
             onClose={() => handleOpenChange(false)}
+            columns={columns}
           />
         </div>
       </DrawerContent>
