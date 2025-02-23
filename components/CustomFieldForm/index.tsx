@@ -8,15 +8,15 @@ import {
 import { TableColumn, TableColumnType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
+import BooleanInputField from "../FormFields/BooleanInputField";
+import SelectInputField from "../FormFields/SelectInputField";
 import TextInputField from "../FormFields/TextInputField";
 import { Button } from "../ui/button";
 import { Form, FormField } from "../ui/form";
-import SelectInputField from "../FormFields/SelectInputField";
-import BooleanInputField from "../FormFields/BooleanInputField";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const customFieldSchema = z.object({
   title: z.string().nonempty("Field Title is required"),
@@ -78,7 +78,6 @@ const CustomFieldForm = ({
     if (!isOpen) {
       setIsSaving(false);
       onClose();
-      form.reset(DEFAULT_CUSTOM_FIELD_FORM_VALUE);
     }
   };
 
@@ -98,13 +97,18 @@ const CustomFieldForm = ({
   };
 
   useEffect(() => {
-    if (!fieldToEdit || !form.reset) return;
-    form.reset({
-      ...fieldToEdit,
-      options: fieldToEdit.options || [],
-    });
-    setOpen(true);
-  }, [fieldToEdit, form]);
+    form.reset(
+      fieldToEdit
+        ? {
+            ...fieldToEdit,
+            options: fieldToEdit.options || [],
+          }
+        : DEFAULT_CUSTOM_FIELD_FORM_VALUE
+    );
+    if (fieldToEdit) {
+      setOpen(true);
+    }
+  }, [fieldToEdit, form, open]);
 
   const {
     fields: optionFields,
@@ -204,7 +208,8 @@ const CustomFieldForm = ({
                       />
                       <Button
                         type="button"
-                        variant="destructive"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive-dark"
                         size="icon"
                         onClick={() => remove(index)}
                       >

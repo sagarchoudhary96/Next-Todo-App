@@ -34,10 +34,10 @@ const TablePagination = ({
         <Select
           value={`${pagination.pageSize}`}
           onValueChange={(value) =>
-            onUpdatePagination((prev) => ({
-              ...prev,
+            onUpdatePagination({
+              currentPage: 1,
               pageSize: Number(value),
-            }))
+            })
           }
         >
           <SelectTrigger>

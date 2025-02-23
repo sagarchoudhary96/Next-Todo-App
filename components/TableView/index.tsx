@@ -32,7 +32,7 @@ type TableViewProps = {
   tasks: Task[];
   onEditTask: (task: Task) => void;
   onDeleteTask: (id: number) => void;
-  onDeleteField: (key: string) => void;
+  onDeleteField: (column: TableColumn) => void;
   onEditField: (column: TableColumn) => void;
 };
 
@@ -159,9 +159,9 @@ const TableView = ({
                           </Button>
                           <Button
                             variant="ghost"
-                            onClick={() => onDeleteField(column.key)}
+                            onClick={() => onDeleteField(column)}
                           >
-                            <Trash2Icon className="h-4 w-4" />
+                            <Trash2Icon className="h-4 w-4 text-destructive" />
                           </Button>
                         </>
                       )}

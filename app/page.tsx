@@ -19,6 +19,7 @@ export default function Home() {
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
   const [taskToEdit, setTaskToEdit] = useState<Task>();
   const [fieldToEdit, setFieldToEdit] = useState<TableColumn>();
+  const [fieldToDelete, setFieldToDelete] = useState<TableColumn | null>(null);
   const { taskColumns, addNewColumn, removeColumn, updateColumn, isLoaded } =
     useTaskSchema();
   const onTaskSubmit: TaskFormSubmitFn = async (taskValues): Promise<void> => {
@@ -40,7 +41,7 @@ export default function Home() {
     }
   };
 
-  const handleDelete = () => {
+  const handleTaskDelete = () => {
     if (!taskToDelete) return;
     toast.promise(
       new Promise<void>((resolve) => {
@@ -52,6 +53,22 @@ export default function Home() {
         loading: "Deleting task...",
         success: "Task deleted successfully",
         error: "Failed to delete task",
+      }
+    );
+  };
+
+  const handleFieldDelete = () => {
+    if (!fieldToDelete) return;
+    toast.promise(
+      new Promise<void>((resolve) => {
+        removeColumn(fieldToDelete.key);
+        setFieldToDelete(null);
+        resolve();
+      }),
+      {
+        loading: "Deleting Field...",
+        success: "Field deleted successfully",
+        error: "Failed to delete field",
       }
     );
   };
@@ -91,9 +108,9 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex items-center w-full justify-between mb-4 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center w-full sm:justify-between mb-4 gap-2">
         <h1 className="text-2xl font-bold">Tasks - {todoList.length}</h1>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center self-end">
           <CustomFieldCreate
             onSubmit={handleCustomFieldSubmit}
             fieldToEdit={fieldToEdit}
@@ -116,15 +133,19 @@ export default function Home() {
         tasks={todoList}
         onEditTask={setTaskToEdit}
         onDeleteTask={setTaskToDelete}
-        onDeleteField={removeColumn}
+        onDeleteField={setFieldToDelete}
         onEditField={setFieldToEdit}
       />
       <ConfirmationDialog
-        show={taskToDelete !== null}
-        title="Delete Task"
-        description="Are you sure you want to delete this task?"
-        onCancel={() => setTaskToDelete(null)}
-        onConfirm={handleDelete}
+        show={taskToDelete !== null || fieldToDelete !== null}
+        title={fieldToDelete ? `Delete ${fieldToDelete.title}` : "Delete Task"}
+        description={`Are you sure you want to delete this ${
+          fieldToDelete ? "field" : "task"
+        }?`}
+        onCancel={() =>
+          fieldToDelete ? setFieldToDelete(null) : setTaskToDelete(null)
+        }
+        onConfirm={fieldToDelete ? handleFieldDelete : handleTaskDelete}
       />
     </>
   );
