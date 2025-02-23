@@ -39,6 +39,14 @@ const TaskEditForm = ({
         if (!column.required) {
           schemaFields[column.key] = schemaFields[column.key].optional();
         }
+      } else if (column.type === TableColumnType.NUMBER) {
+        if (column.required) {
+          schemaFields[column.key] = z
+            .number()
+            .int(`"${column.title}" is required`);
+        } else {
+          schemaFields[column.key] = z.number().int().optional();
+        }
       }
     });
     return z.object(schemaFields);

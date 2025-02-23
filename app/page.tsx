@@ -1,7 +1,9 @@
 "use client";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
+import Filter from "@/components/Filter";
 import TaskForm, { TaskFormSubmitFn } from "@/components/TaskForm";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,9 +35,18 @@ export default function Home() {
   const [taskToEdit, setTaskToEdit] = useState<Task>();
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const { taskColumns } = useTaskSchema();
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const totalPages = Math.ceil(todoList.length / DEFAULT_PAGE_SIZE);
-  const paginatedTodos = todoList.slice(
+  const filteredTodos = todoList.filter((task) =>
+    Object.entries(filters).every(
+      ([key, value]) =>
+        !value || String(task[key]).toLowerCase().includes(value.toLowerCase())
+    )
+  );
+
+  const totalPages = Math.ceil(filteredTodos.length / DEFAULT_PAGE_SIZE);
+
+  const paginatedTodos = filteredTodos.slice(
     (currentPage - 1) * DEFAULT_PAGE_SIZE,
     currentPage * DEFAULT_PAGE_SIZE
   );
@@ -107,9 +118,20 @@ export default function Home() {
     );
   };
 
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
   return (
     <>
-      <div className="flex items-center w-full justify-end mb-4">
+      <div className="flex items-center w-full justify-between mb-4 gap-2">
+        <Input
+          placeholder="Search tasks..."
+          value={filters.title || ""}
+          onChange={(e) => handleFilterChange("title", e.target.value)}
+          className="w-full sm:w-1/3"
+          aria-label="Search tasks"
+        />
         <TaskForm
           columns={taskColumns}
           task={taskToEdit}
@@ -123,43 +145,61 @@ export default function Home() {
       </div>
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex-1 w-full overflow-auto">
-          <Table className="border table-fixed">
+          <Table className="border sm:table-fixed">
             <TableHeader>
               <TableRow>
-                {taskColumns.map(({ title, key }) => (
-                  <TableHead className="border" key={key} scope="col">
-                    <Button
-                      variant="ghost"
-                      className="flex items-center gap-2 font-bold text-primary"
-                      onClick={() => handleSort(key)}
-                      aria-sort={
-                        sortConfig.key === key
-                          ? sortConfig.direction === "asc"
-                            ? "ascending"
-                            : "descending"
-                          : "none"
-                      }
-                    >
-                      {title}{" "}
-                      {sortConfig.key === key ? (
-                        sortConfig.direction === "asc" ? (
-                          <ArrowUpNarrowWideIcon className="h-4 w-4" />
+                {taskColumns.map((column) => (
+                  <TableHead className="border" key={column.key} scope="col">
+                    <div className="flex flex-col gap-1 pb-2">
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-2 font-bold text-primary"
+                        onClick={() => handleSort(column.key)}
+                        aria-sort={
+                          sortConfig.key === column.key
+                            ? sortConfig.direction === "asc"
+                              ? "ascending"
+                              : "descending"
+                            : "none"
+                        }
+                      >
+                        {column.title}
+                        {sortConfig.key === column.key ? (
+                          sortConfig.direction === "asc" ? (
+                            <ArrowUpNarrowWideIcon className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownWideNarrowIcon className="h-4 w-4" />
+                          )
                         ) : (
-                          <ArrowDownWideNarrowIcon className="h-4 w-4" />
-                        )
-                      ) : (
-                        <ArrowUpDownIcon className="w-4 h-4" />
+                          <ArrowUpDownIcon className="w-4 h-4" />
+                        )}
+                      </Button>
+                      {column.key !== "title" && (
+                        <Filter
+                          value={filters[column.key]}
+                          onChange={handleFilterChange}
+                          column={column}
+                        />
                       )}
-                    </Button>
+                    </div>
                   </TableHead>
                 ))}
-                <TableHead className="border" scope="col">
+                <TableHead className="border w-38" scope="col">
                   <span className="font-bold text-primary">Actions</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {/* render todo by mapping from columns */}
+              {!paginatedTodos.length && (
+                <TableRow>
+                  <TableCell
+                    colSpan={taskColumns.length + 1}
+                    className="text-center"
+                  >
+                    No tasks found
+                  </TableCell>
+                </TableRow>
+              )}
               {paginatedTodos.map((task) => (
                 <TableRow
                   key={task.id}
@@ -200,25 +240,27 @@ export default function Home() {
             </TableBody>
           </Table>
         </div>
-        <div className="flex w-full justify-between items-center mt-4">
-          <Button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <span className="text-md font-medium">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
+        {!!totalPages && (
+          <div className="flex w-full justify-between items-center mt-4">
+            <Button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-md font-medium">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
       <ConfirmationDialog
         show={taskToDelete !== null}
