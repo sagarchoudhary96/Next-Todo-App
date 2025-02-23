@@ -78,11 +78,18 @@ const useLocalStorage = <T>(
 
   // Listen to changes of key in localStorage
   // This could be useful if the value is changed in another tab or window
-  window.addEventListener("storage", (event) => {
-    if (event.key === key) {
-      setStoredValue(readValue());
+  useEffect(() => {
+    if (IS_SERVER) {
+      return;
     }
-  });
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === key) {
+        setStoredValue(readValue());
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [key, readValue]);
 
   return [storedValue, setValue, removeValue];
 };
