@@ -1,11 +1,17 @@
 import { TableColumn } from "@/lib/types";
 import intialTaskColumns from "@/data/taskColumns.json";
 import useLocalStorage from "./useLocalStorage";
+import { useEffect, useState } from "react";
 const useTaskSchema = () => {
   const [customColumns, setCustomColumns] = useLocalStorage<TableColumn[]>(
     "customColumns",
     []
   );
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   const addNewColumn = (newColumn: TableColumn) => {
     // add column before the action column
@@ -18,10 +24,22 @@ const useTaskSchema = () => {
     );
   };
 
+  const updateColumn = (columnKey: string, newColumn: Partial<TableColumn>) => {
+    setCustomColumns((prev) =>
+      prev.map((column) =>
+        column.key === columnKey ? { ...column, ...newColumn } : column
+      )
+    );
+  };
+
   return {
-    taskColumns: [...intialTaskColumns, ...customColumns] as TableColumn[],
+    taskColumns: isLoaded
+      ? ([...intialTaskColumns, ...customColumns] as TableColumn[])
+      : (intialTaskColumns as TableColumn[]),
+    isLoaded,
     addNewColumn,
     removeColumn,
+    updateColumn,
   };
 };
 

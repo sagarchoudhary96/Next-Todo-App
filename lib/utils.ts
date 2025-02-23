@@ -10,7 +10,5 @@ export const getValueLabelFromSelectColumn = (
   column: TableColumn,
   value?: string | number
 ) => {
-  return (
-    column.options?.find((option) => option.value === value)?.label ?? value
-  );
+  return column.options?.find((option) => option.value === value)?.label ?? "-";
 };

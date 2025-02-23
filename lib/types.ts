@@ -24,6 +24,7 @@ export type TableColumn = {
   type?: TableColumnType;
   required?: boolean;
   options?: { label: string; value: string }[];
+  isCustom?: boolean;
 };
 
 export type TablePaginationState = {

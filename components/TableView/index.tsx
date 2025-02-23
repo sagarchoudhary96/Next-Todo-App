@@ -20,6 +20,7 @@ import {
   ArrowDownWideNarrowIcon,
   ArrowUpDownIcon,
   ArrowUpNarrowWideIcon,
+  Edit3Icon,
   PenIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -31,6 +32,8 @@ type TableViewProps = {
   tasks: Task[];
   onEditTask: (task: Task) => void;
   onDeleteTask: (id: number) => void;
+  onDeleteField: (key: string) => void;
+  onEditField: (column: TableColumn) => void;
 };
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -40,6 +43,8 @@ const TableView = ({
   tasks,
   onEditTask,
   onDeleteTask,
+  onDeleteField,
+  onEditField,
 }: TableViewProps) => {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sortConfig, setSortConfig] = useState<TableSortConfig>({
@@ -114,35 +119,53 @@ const TableView = ({
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex-1 w-full overflow-auto">
-        <Table className="border sm:table-fixed">
+        <Table className="border">
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
                 <TableHead className="border" key={column.key} scope="col">
-                  <div className="flex flex-col gap-1 pb-2">
-                    <Button
-                      variant="ghost"
-                      className="flex items-center gap-2 font-bold text-primary"
-                      onClick={() => handleSort(column.key)}
-                      aria-sort={
-                        sortConfig.key === column.key
-                          ? sortConfig.direction === SORT_DIRECTION.ASC
-                            ? "ascending"
-                            : "descending"
-                          : "none"
-                      }
-                    >
-                      {column.title}
-                      {sortConfig.key === column.key ? (
-                        sortConfig.direction === SORT_DIRECTION.ASC ? (
-                          <ArrowUpNarrowWideIcon className="h-4 w-4" />
+                  <div className="flex flex-col gap-1 py-2">
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        className="flex flex-1 items-center gap-2 font-bold text-primary"
+                        onClick={() => handleSort(column.key)}
+                        aria-sort={
+                          sortConfig.key === column.key
+                            ? sortConfig.direction === SORT_DIRECTION.ASC
+                              ? "ascending"
+                              : "descending"
+                            : "none"
+                        }
+                      >
+                        {column.title}
+                        {sortConfig.key === column.key ? (
+                          sortConfig.direction === SORT_DIRECTION.ASC ? (
+                            <ArrowUpNarrowWideIcon className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownWideNarrowIcon className="h-4 w-4" />
+                          )
                         ) : (
-                          <ArrowDownWideNarrowIcon className="h-4 w-4" />
-                        )
-                      ) : (
-                        <ArrowUpDownIcon className="w-4 h-4" />
+                          <ArrowUpDownIcon className="w-4 h-4" />
+                        )}
+                      </Button>
+                      {column.isCustom && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            onClick={() => onEditField(column)}
+                          >
+                            <Edit3Icon className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => onDeleteField(column.key)}
+                          >
+                            <Trash2Icon className="h-4 w-4" />
+                          </Button>
+                        </>
                       )}
-                    </Button>
+                    </div>
                     <Filter
                       value={filters[column.key]}
                       onChange={handleFilterChange}
@@ -180,7 +203,7 @@ const TableView = ({
                           column as TableColumn,
                           task[column.key as keyof Task]
                         )
-                      : task[column.key as keyof Task]}
+                      : task[column.key as keyof Task] || "-"}
                   </TableCell>
                 ))}
                 <TableCell className="border">

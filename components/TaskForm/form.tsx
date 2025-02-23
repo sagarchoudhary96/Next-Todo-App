@@ -109,6 +109,9 @@ const TaskEditForm = ({
                   field={field}
                   label={column.title}
                   placeholder={`Enter ${column.title}`}
+                  type={
+                    column.type === TableColumnType.NUMBER ? "number" : "text"
+                  }
                 />
               )}
             />
