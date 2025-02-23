@@ -1,6 +1,8 @@
 # Next Todo App
 
-A web-based task management application similar to Notion, Asana, and Liner allowing users to manage tasks (create, read, update, and delete (CRUD) tasks) as well as filter, sort, and paginate through them. It also allows to create custom Fields for the tasks making the task structure synamic and generating UI accordingly.
+## [Live Version](https://next-todo-app-alpha-one.vercel.app)
+
+A web-based task management application similar to Notion, Asana, and Linear allows users to manage tasks (create, read, update, and delete (CRUD) tasks) and filter, sort, and paginate through them. It also allows creating custom Fields for the tasks, making the task structure dynamic and generating UI accordingly.
 
 ## Requirements
 
@@ -23,15 +25,15 @@ A web-based task management application similar to Notion, Asana, and Liner allo
 
 
 ## Functionalities
-* The Project provides task management UI that allows users to add, update, and remove tasks.
+* The Project provides a task management UI that allows users to add, update, and remove tasks.
 
 * The interface allows for filtering, sorting, and searching tasks using controls provided in table headers.
 
-* It uses `localStorage` to store the data within the browser and the initial data is loaded from `data` folder for both todo list and base field columns.
+* It uses `localStorage` to store the data within the browser and the initial data is loaded from the `data` folder for both the todo list and base field columns.
 
 * Basic Pagination is implemented.
 
-* A custom Field Editor is implemented to dynamically add new fields to the tasks letting then create new field of `Text, Number or Select` type and also letting user filter/sort using custom fields too.
+* A custom Field Editor is implemented to dynamically add new fields to the tasks letting them create new fields of `Text, Number or Select` type and also letting the user filter/sort using custom fields.
 
 
 ## Learn More
