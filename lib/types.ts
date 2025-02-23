@@ -25,3 +25,19 @@ export type TableColumn = {
   required?: boolean;
   options?: { label: string; value: string }[];
 };
+
+export type TablePaginationState = {
+  currentPage: number;
+  pageSize: number;
+};
+
+export enum SORT_DIRECTION {
+  ASC = "asc",
+  DESC = "desc",
+  NONE = "none",
+}
+
+export type TableSortConfig = {
+  key: string;
+  direction: SORT_DIRECTION;
+};
