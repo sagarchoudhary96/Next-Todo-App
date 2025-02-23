@@ -14,7 +14,13 @@ import initialTodos from "@/data/todo.json";
 import useTaskSchema from "@/hooks/useTaskSchema";
 import { TableColumn, TableColumnType, Task } from "@/lib/types";
 import { getValueLabelFromSelectColumn } from "@/lib/utils";
-import { ArrowUpDownIcon, PenIcon, Trash2Icon } from "lucide-react";
+import {
+  ArrowDownWideNarrowIcon,
+  ArrowUpDownIcon,
+  ArrowUpNarrowWideIcon,
+  PenIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -134,7 +140,16 @@ export default function Home() {
                           : "none"
                       }
                     >
-                      {title} <ArrowUpDownIcon className="w-4 h-4" />
+                      {title}{" "}
+                      {sortConfig.key === key ? (
+                        sortConfig.direction === "asc" ? (
+                          <ArrowUpNarrowWideIcon className="h-4 w-4" />
+                        ) : (
+                          <ArrowDownWideNarrowIcon className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDownIcon className="w-4 h-4" />
+                      )}
                     </Button>
                   </TableHead>
                 ))}
