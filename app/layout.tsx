@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${montserrat.className} antialiased overflow-hidden flex flex-col h-screen`}
+        className={`${montserrat.className} antialiased overflow-hidden flex flex-col h-[100dvh]`}
       >
         <ThemeProvider
           attribute="class"
