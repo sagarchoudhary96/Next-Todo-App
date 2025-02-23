@@ -1,4 +1,4 @@
-import { TableColumnType } from "@/lib/types";
+import { TableColumn, TableColumnType, Task } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { useMemo } from "react";
@@ -12,6 +12,26 @@ import SelectInputField from "../FormFields/SelectInputField";
 
 type TaskEditFormProps = TaskFormProps & {
   isSaving?: boolean;
+};
+
+const getDefaultValues = (columns: TableColumn[], task?: Task) => {
+  const defaultValues: Record<string, string | number> = {};
+  columns.forEach((column) => {
+    if (task && task[column.key]) {
+      defaultValues[column.key] = task[column.key] || "";
+    } else {
+      if (column.type === TableColumnType.TEXT) {
+        defaultValues[column.key] = "";
+      } else if (column.type === TableColumnType.SELECT) {
+        defaultValues[column.key] = column.options
+          ? column.options[0].value
+          : "";
+      } else if (column.type === TableColumnType.NUMBER) {
+        defaultValues[column.key] = 0;
+      }
+    }
+  });
+  return defaultValues;
 };
 
 const TaskEditForm = ({
@@ -56,7 +76,7 @@ const TaskEditForm = ({
 
   const form = useForm<TaskFormType>({
     resolver: zodResolver(taskSchema),
-    defaultValues: task,
+    defaultValues: getDefaultValues(columns, task),
   });
 
   return (

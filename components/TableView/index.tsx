@@ -67,8 +67,6 @@ const TableView = ({
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  const totalPages = Math.ceil(tasks.length / pagination.pageSize);
-
   const finalTasksRows = useMemo(() => {
     const finalTasks = [...tasks].filter((task) =>
       Object.entries(filters).every(
@@ -103,11 +101,15 @@ const TableView = ({
       });
     }
 
-    return finalTasks.slice(
-      (pagination.currentPage - 1) * pagination.pageSize,
-      pagination.currentPage * pagination.pageSize
-    );
-  }, [tasks, filters, columns, sortConfig, pagination]);
+    return finalTasks;
+  }, [tasks, filters, columns, sortConfig]);
+
+  const totalPages = Math.ceil(finalTasksRows.length / pagination.pageSize);
+
+  const paginatedTasks = finalTasksRows.slice(
+    (pagination.currentPage - 1) * pagination.pageSize,
+    pagination.currentPage * pagination.pageSize
+  );
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
@@ -155,14 +157,14 @@ const TableView = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!finalTasksRows.length && (
+            {!paginatedTasks.length && (
               <TableRow>
                 <TableCell colSpan={columns.length + 1} className="text-center">
                   No tasks found
                 </TableCell>
               </TableRow>
             )}
-            {finalTasksRows.map((task) => (
+            {paginatedTasks.map((task) => (
               <TableRow
                 key={task.id}
                 className="cursor-pointer"
@@ -185,13 +187,19 @@ const TableView = ({
                   <div className="flex items-center gap-2">
                     <Button
                       variant="secondary"
-                      onClick={() => onEditTask(task)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditTask(task);
+                      }}
                     >
                       <PenIcon className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="destructive"
-                      onClick={() => onDeleteTask(task.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteTask(task.id);
+                      }}
                     >
                       <Trash2Icon className="w-4 h-4" />
                     </Button>
