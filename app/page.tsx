@@ -1,6 +1,5 @@
 "use client";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
-import ConfirmationDialog from "@/components/ConfirmationDialog";
 import CustomFieldCreate from "@/components/CustomFieldForm";
 import KanbanView from "@/components/KanbanView"; // Import KanbanView
 import TableView from "@/components/TableView";
